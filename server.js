@@ -19,7 +19,7 @@ app.use('/api', authRoutes);
     console.error('Unable to connect to the database:', error);
   });
 
-   sequelize.sync();
+   sequelize.sync(); // connect to database
 
 
   const PORT = process.env.PORT || 4000;

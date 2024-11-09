@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const validator = require('validator');
 const { Op } = require('sequelize');
 
 
@@ -8,12 +9,16 @@ exports.createAdmin = async (req, res) => {
     
     try {
     const { name, email, password, role } = req.body;
+
     if (!email || !password) {
         return res.status(400).send({
             message: "Email and password should be provided"
         })
+    } 
+    const isValidEmail = validator.isEmail(email);
+    if ( !isValidEmail) {
+        return res.send({ message: 'Your email is invalid, enter the real email! '});
     }
-    
     // check user exists or not
     let user = await User.findOne({
         where: { email }
@@ -53,6 +58,11 @@ exports.register = async (req, res) => {
             })
         }
         
+        const isValidEmail = validator.isEmail(email);
+        if ( !isValidEmail) {
+           return res.send({ message: 'Your email is invalid, enter the real email! '});
+        }
+        
         // check user exists or not
         let user = await User.findOne({
             where: { email }
@@ -75,6 +85,10 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
+    const isValidEmail = validator.isEmail(email);
+    if ( !isValidEmail) {
+       return res.send({ message: 'Your email is invalid, enter the real email! '});
+    }
     try {
         const user = await User.findOne({ where: {email}});
         if (!user) {
@@ -89,7 +103,7 @@ exports.login = async (req, res) => {
             
         }
         await user.save();
-        const token = jwt.sign({ id: user.id, role: user.role, name: user.name }, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: user.id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET);
         
         console.log(user)
         const { password: _, ..._user } = user.dataValues;
@@ -137,26 +151,18 @@ exports.userRole = async (req, res) => {
     
     const selectedRole = req.user.role;
     try {
-        const findUser = await User.findAll({ where: 
+        const findUser = await User.findOne({ where: 
             { 
                 // role: { [Op.in] : ['user', 'guest'] }
-                role: 'USER'
+                email: req.user.email
             } 
         });
-        console.log('Array length', findUser.length)
-        let eachPerson = '';
-        
-        for (let i = 0 ; i < findUser.length ; i++) {
-            console.log(i)
-            const eachPerson = findUser[i];
-            const { password: _, ..._eachPerson } = eachPerson.dataValues;
-            findUser[i] = _eachPerson ;
-        }
-        console.log( req.user.name)
+     
+        // const { password: _, ..._findUser } = findUser.dataValues;
 
          res.status(200).json({ User: findUser, message: `welcome ${ req.user.name } USER !!!!!!!!!!` });
     } catch (error) {
-        res.status(400).json( {error: error.message, message: "Unknown error, please wait me."} );
+        res.status(400).json( {error: error.message, message: "You can't do it, try again later."} );
     }
   
 
@@ -165,12 +171,44 @@ exports.userRole = async (req, res) => {
 exports.changePerson = async (req, res) => {
     console.log(" Here is changePerson function! ")
     const { email, role} = req.body ;
+
+    const isValidEmail = validator.isEmail(email);
+    if ( !isValidEmail) {
+       return res.send({ message: 'Your email is invalid, enter the real email! '});
+    }
+
     const user = await User.findOne({ where: { email }});
     try {
         user.role = role;
         await user.save(); 
         res.status(200).json({ message: " You changed a person's role successfully! "});
     } catch (error) {
+
         res.json( ' You cannot change the person role. ');
+    }
+}
+
+exports.changeSelf = async (req, res ) => {
+    console.log("Here is changeSelf function! ")
+    console.log('changeself==>', req.user)
+
+    try {
+        const email = req.user.email ;
+        const { name, password } = req.body ;
+
+        const newUser = await User.findOne({ where: { email: email }});
+        console.log('new -->' , newUser)
+        newUser.name = name ;
+        
+        console.log("Here is mistake", bcrypt.hash( password, 10))
+        const newPassword = await bcrypt.hash( password, 10);
+     
+        newUser.password = newPassword ;
+        await newUser.save() ;
+        
+
+        res.status(200).json({ message: 'Your information is changed successful! ' , you: newUser });
+    } catch (error) {
+        res.status(500).json({ error: error, message: 'Your information cannot be changed ' });
     }
 }
