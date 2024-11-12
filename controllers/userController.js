@@ -1,11 +1,10 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const validator = require('validator');
+import bcrypt from 'bcryptjs';
+import User from '../models/user.js';
+import validator from 'validator';
 
 
 
-exports.getUsers = async (req, res) => {
+export const getUsers = async (req, res) => {
     try {
         const users = await User.findAll();
         
@@ -23,7 +22,7 @@ exports.getUsers = async (req, res) => {
     }
   };
 
-  exports.addUser = async (req, res) => {
+export const addUser = async (req, res) => {
     
     try {
     const { name, email, password, role } = req.body;
@@ -66,7 +65,7 @@ exports.getUsers = async (req, res) => {
     }
 }
 
-exports.changeRole = async (req, res) => {
+export const changeRole = async (req, res) => {
     try {
         console.log(" Here is changeRole function! ")
         
@@ -94,7 +93,7 @@ exports.changeRole = async (req, res) => {
     }
 }
 
-exports.deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
     try {
         console.log(" Here is the deleteUser function! ")
         const id = req.params.id ;

@@ -1,17 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../controllers/authController');
-const { authenticateToken, authorizeRole } = require('../middleware/authMiddleware');
-const { changeMyInfo } = require('../controllers/authController');
+import express from 'express';
+import { authenticateToken, authorizeRole } from '../middleware/authMiddleware.js';
+import { changeMyInfo, register, login, getMe } from '../controllers/authController.js';
 
+const router = express.Router();
 
 // public user sign up/in
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/register', register);
+router.post('/login', login);
 
 // user functions
-router.get('/myInfo', authenticateToken, authController.getMe );
+router.get('/myInfo', authenticateToken, getMe );
 router.patch('/changeMe', authenticateToken, changeMyInfo );
 
 
-module.exports = router;  // Ensure you export the router instance
+export default router;  // Ensure you export the router instance

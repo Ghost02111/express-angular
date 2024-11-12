@@ -1,13 +1,12 @@
-const { DataTypes, Sequelize } = require('sequelize');
-const sequelize = require('../config/db');
-const bcrypt = require('bcryptjs');
+import { DataTypes, Sequelize } from 'sequelize';
+import sequelize from '../config/db.js';
+
 
 
 const User =  sequelize.define('User', {
     name: {
         type: DataTypes.STRING,
         // type: Sequelize.STRING, 
- 
         allowNull: false,
     },
     email: {
@@ -30,4 +29,4 @@ const User =  sequelize.define('User', {
 },
 );
 
-module.exports = User ;
+export default User ;

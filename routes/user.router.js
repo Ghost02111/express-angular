@@ -1,15 +1,16 @@
-const express = require('express');
+import express from 'express';
+import { authenticateToken, authorizeRole } from '../middleware/authMiddleware.js';
+import {getUsers, addUser, changeRole, deleteUser } from '../controllers/userController.js';
+
 const router = express.Router();
-const { authenticateToken, authorizeRole } = require('../middleware/authMiddleware');
-const userController = require('../controllers/userController');
 
-router.route("/admin/users")
-  .get(authenticateToken, authorizeRole(['ADMIN']) , userController.getUsers)
-  .post(authenticateToken, authorizeRole(['ADMIN']) , userController.addUser)
+router.route("/")
+  .get(authenticateToken, authorizeRole(['ADMIN']) , getUsers)
+  .post(authenticateToken, authorizeRole(['ADMIN']) , addUser);
 
-router.route('/admin/users/:id')
-  .patch(authenticateToken, authorizeRole(['ADMIN']) , userController.changeRole)
-  .delete(authenticateToken, authorizeRole(['ADMIN']), userController.deleteUser)
+router.route('/:id')
+  .patch(authenticateToken, authorizeRole(['ADMIN']) , changeRole)
+  .delete(authenticateToken, authorizeRole(['ADMIN']), deleteUser);
 
 
-module.exports = router ;
+export default router ;

@@ -1,10 +1,10 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const validator = require('validator');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/user.js';
+import validator from 'validator';
 
 
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
@@ -21,9 +21,10 @@ exports.register = async (req, res) => {
         }
         
         // check user exists or not
-        let user = await User.findOne({
-            where: { email }
-        })
+        let user = await User.findOne( {
+                  where: { email }
+                } );
+        console.log(user)
 
         if (user) {
             // user already exists
@@ -40,13 +41,13 @@ exports.register = async (req, res) => {
             });
     } catch (error) {
         res.status(400).json({
-            error: error.message , 
+            error: error.message, 
             message: 'Your request is bad one, try again!'
         });
     }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
 
     try {
         const { email, password } = req.body;
@@ -83,12 +84,13 @@ exports.login = async (req, res) => {
         });
     } catch (error) {
         res.status(400).json({ 
+            error,
             error: "Your request is bad one, it is failed" 
         });
     }
 };
 
-exports.getMe = async (req, res) => {
+export const getMe = async (req, res) => {
     try {
         const user = await User.findOne({ 
             where: 
@@ -111,7 +113,7 @@ exports.getMe = async (req, res) => {
     }
 };
 
-exports.changeMyInfo = async (req, res ) => {
+export const changeMyInfo = async (req, res ) => {
     console.log("Here is changeMyInfo function! ")
     console.log('changeself==>', req.user)
 
