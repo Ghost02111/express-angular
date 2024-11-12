@@ -12,4 +12,4 @@ router.route('/admin/users/:id')
   .delete(authenticateToken, authorizeRole(['ADMIN']), userController.deleteUser)
 
 
-module.exports = router ;
+module.exports = router ; //exports 
