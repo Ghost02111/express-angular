@@ -12,5 +12,4 @@ router.route('/:id')
   .patch(authenticateToken, authorizeRole(['ADMIN']) , changeRole)
   .delete(authenticateToken, authorizeRole(['ADMIN']), deleteUser);
 
-
-export default router ;
+  export default router ;
