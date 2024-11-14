@@ -55,17 +55,15 @@ export const changeCategory = async (req, res) => {
             return res.status(400).json({ message: 'You must write the name', });
         }
         const id = req.params.id;
-        const category = await Category.findOne({
-            where: { id },
-        });
+        const category = await Category.findByPk( id );
         
         if (!category) {
             return res.status(404).send({ message: "The category can't be found!" });
         }
 
-        console.log(category)
-        category.name = name; // Set the category name
-        await category.save();
+        await category.update({
+            name: name
+        })
 
         res.status(200).json({
             message: "The category is changed successfully.",

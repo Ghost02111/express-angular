@@ -72,13 +72,14 @@ export const changeRole = async (req, res) => {
         const id = req.params.id;
         const { role } = req.body ;
 
-        const user = await User.findOne( { where: { id } } );
+        const user = await User.findByPk( id );
         if (!user) {
             return res.status(404).send({ message: " The User is not found! Check your request."})
         }
 
-        user.role = role;
-        await user.save(); 
+        await user.update({ 
+            role, 
+        })
         res.status(200).json({ 
             message: " You changed a person's role successfully! ",
             Result: { 

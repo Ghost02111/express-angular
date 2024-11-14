@@ -3,6 +3,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.router.js';
 import productRoutes from './routes/product.router.js';
 import categoryRoute from './routes/category.route.js';
+import cartRoute from './routes/cart.route.js';
 import sequelize from './config/db.js';
 import dotenv from 'dotenv';
 
@@ -13,10 +14,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded ({ extended: true }));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
+app.use('/api/auth', authRoutes );
+app.use('/api/users', userRoutes );
+app.use('/api/products', productRoutes );
 app.use('/api/category', categoryRoute ) ;
+app.use('/api/cart', cartRoute );
 
 sequelize.authenticate()
   .then(() => {
