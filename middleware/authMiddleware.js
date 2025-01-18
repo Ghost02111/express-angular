@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 export const authenticateToken = (req, res, next) => {
+  console.log('request', req.header('Authorization'))
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (!token) return res.status(403).json(
     {
@@ -14,7 +15,7 @@ export const authenticateToken = (req, res, next) => {
     req.user = verified;
     next();
   } catch (error) {
-    res.status(400).json({ 
+    res.status(401).json({ 
       message: 'Invalid token' 
     });
   }
@@ -22,9 +23,10 @@ export const authenticateToken = (req, res, next) => {
 
 export const authorizeRole = (roles) => (req, res, next) => {
 
-
+  console.log('Here is the backend middleware rolecheck function')
   if (!roles.includes(req.user.role)) 
     {
+      console.log('role =>', req.user.role)
       return res.status(403).json({ message: 'You cannot do this, you are a normal user.' });
     }
   next();

@@ -6,19 +6,35 @@ import categoryRoute from './routes/category.route.js';
 import cartRoute from './routes/cart.route.js';
 import sequelize from './config/db.js';
 import dotenv from 'dotenv';
+import cors from 'cors';
+
 
 dotenv.config();
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:4200', // My Angular frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  credentials: true,
+}));
+
+app.use('/uploads', express.static('uploads')); // Serve static files from "uploads" directory
+
+
 app.use(express.json());
 app.use(express.urlencoded ({ extended: true }));
+
+// app.use(cors());
+
 
 app.use('/api/auth', authRoutes );
 app.use('/api/users', userRoutes );
 app.use('/api/products', productRoutes );
-app.use('/api/category', categoryRoute ) ;
+app.use('/api/category', categoryRoute );
 app.use('/api/cart', cartRoute );
+
+
 
 sequelize.authenticate()
   .then(() => {

@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken, authorizeRole } from '../middleware/authMiddleware.js';
-import { getOnlySelfCart , refreshCart , removeCartItem, addCart, getAllCart } from '../controllers/cartController.js';
+import { getOnlySelfCart , refreshCart , reduceCartItem, addCart, getAllCart, getAllProductByUser, removeCartItem } from '../controllers/cartController.js';
 
 const router = express.Router();
 // For Everyone
@@ -8,9 +8,17 @@ router.route('/')
     .get( authenticateToken, getOnlySelfCart) 
     .post( authenticateToken, addCart)
 
+// By normal User, get all products before buy things
+router.route('/products')
+    .get( authenticateToken, getAllProductByUser ) 
+
 // deleting current Item 
-router.route('/:id')    
-    .delete( authenticateToken, removeCartItem ) ;
+router.route('/cartitem')    
+    .post( authenticateToken, reduceCartItem ) 
+
+router.route('/cartitem/:id')
+    .delete(authenticateToken, removeCartItem) 
+
 
 // if user want to buy something later, we must the previous cart state
 router.route('/cls')

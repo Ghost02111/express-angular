@@ -3,6 +3,7 @@ import Category from "../models/category.js";
 
 export const createCategory = async (req, res) => {
     try {
+        console.log('Here is the createCategory backend and the request: ', req.body)
         const { name } = req.body ;
         if (!name) {
             return res.status(400).json(
@@ -12,10 +13,12 @@ export const createCategory = async (req, res) => {
 
        const  foundedCategory = await Category.findOne( {
                where: { name },
-     });
+        });
+     console.log('000000')
         if ( foundedCategory ) {
             return res.status(400).send({ message: "The name already exists, take another name! "});
         }
+
         const category = await Category.create( {
              name ,
         });
@@ -77,6 +80,7 @@ export const changeCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
     try {
+        console.log('Here is the deleteCategory backend function!')
         const id = req.params.id ;
         const deletedCategory = await Category.destroy( {
             where: { id }, 

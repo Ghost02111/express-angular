@@ -5,6 +5,7 @@ import validator from 'validator';
 
 
 export const getUsers = async (req, res) => {
+    console.log('Here is the getUser backend function!')
     try {
         const users = await User.findAll();
         
@@ -83,6 +84,7 @@ export const changeRole = async (req, res) => {
         res.status(200).json({ 
             message: " You changed a person's role successfully! ",
             Result: { 
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role
@@ -112,3 +114,25 @@ export const deleteUser = async (req, res) => {
         })
     }
 }
+
+// export const getCurrentProduct = async (req, res) => {
+//     try {
+//         const id = req.params.id ;
+//         const product = await Product.findByPk( id );
+//         if ( !product ) {
+//             return res.status(404).json({ message: 'There is no the product! '})
+//         }
+//         res.status(200).json(
+//             {
+//                 message: 'Get current product successfully',
+//                 result: product ,
+//             }
+//         );
+//     } catch (error) {
+//         res.status(500).json(
+//             {
+//                 message: error.message ,
+//             }
+//         )
+//     }
+// }

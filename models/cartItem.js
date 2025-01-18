@@ -15,6 +15,10 @@ const CartItem = sequelize.define('CartItem', {
       type: DataTypes.INTEGER,
       defaultValue: 1,
     },
+    price: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
 
   });
 

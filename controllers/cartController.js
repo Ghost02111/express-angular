@@ -4,6 +4,7 @@ import  CartItem  from '../models/cartItem.js';
 import { createBrotliDecompress } from 'zlib';
 import Product from '../models/product.js';
 import { measureMemory } from 'vm';
+import User from '../models/user.js';
 
 // Create or get the user's cart 
 
@@ -63,6 +64,7 @@ export const addCart = async (req, res) => {
                 cartId,
                 productId,
                 quantity,
+                price: product.price ,
                 name: product.name,
             });
         }
@@ -87,13 +89,21 @@ export const addCart = async (req, res) => {
     }
 };
 
-export const removeCartItem = async (req, res) => {
+export const reduceCartItem = async (req, res) => {
+    console.log('Here is the remove CartItem function')
     try {
         const { productId, quantity } = req.body ;
-        const id = req.params.id ;
-        const targetItem = await CartItem.findByPk( id );
-        console.log(targetItem)
-        const cart = await Cart.findByPk( targetItem.cartId );
+        console.log('response', res.body)
+        const userId = req.user.id ;
+        console.log('userId', userId)
+        const cart = await Cart.findOne({ where: { userId } } );
+        console.log('cartId', cart.id)
+        const targetItem = await CartItem.findOne( { where: {
+                productId , 
+                cartId: cart.id ,
+            }
+        } );
+        console.log('yayaya')
 
                
         if ( !productId || !quantity ) {
@@ -103,7 +113,6 @@ export const removeCartItem = async (req, res) => {
                 }
             );
         } 
-
         if ( !targetItem ) {
             return res.status(404).json( {
                 message: "The Item is not found. check your item's id"
@@ -112,26 +121,20 @@ export const removeCartItem = async (req, res) => {
 
         const product = await Product.findByPk( productId ) ;
 
-        if ( quantity > targetItem.quantity ) {
-            return res.status(400).json(
-                {
-                    message: 'The quantity that you want to remove is too much',
-                }
-            );
+        if ( quantity >= targetItem.quantity ) {
+            await CartItem.destroy({ where: { cartId: cart.id, productId } }) ;
         } 
         targetItem.quantity -= quantity ;
         cart.totalCost -= product.price * quantity ;
         await cart.save();
-        console.log(cart.totalCost)
         await targetItem.save();
         
         const cartState = await CartItem.findAll({ where: { cartId: cart.id }});
-        console.log('here')
         res.status(200).json(
             {
                 message: 'You removed the CartItem. Now your cart has following things',
-                cart_state: cart,
-                Cart_Item_State: cartState ,
+                cartstate: cart,
+                CartItemState: cartState ,
             }
         );
     } catch (error) {
@@ -150,7 +153,11 @@ export const refreshCart = async (req, res) => {
 
         const amount = await CartItem.destroy({ where: { cartId: cart.id } });
 
-        res.status(200).json({ message: 'Refresh completed successfully.' });
+        res.status(200).json(
+            { 
+                 message: 'Refresh completed successfully.' 
+            }
+    );
     } catch (error) {
         res.status(500).json( 
             {
@@ -165,7 +172,7 @@ export const getAllCart = async (req, res) => {
         const allCart = await Cart.findAll({ include: 'items' });
         if (!allCart ) {
             return res.status(404).json({ 
-                message: 'There are any carts in this database! Add cart! '
+                message: 'There are any cart in this database! Create cart! '
              });
         }
         res.status(200).json(
@@ -177,8 +184,72 @@ export const getAllCart = async (req, res) => {
     } catch (error) {
         res.status(500).json( 
             {
-                error: error.message 
+                error: error.message ,
             }
         );
+    }
+}
+
+export const getAllProductByUser = async (req, res) => {
+    try {
+        const allProducts = await Product.findAll();
+        if ( !allProducts ) {
+            return res.status(404).json(
+                {
+                    message: 'There is no product here! '
+                }
+            );
+        }
+        res.status(200).json(
+            {
+                message: "You got all product successfully, Look at the result", 
+                result: allProducts,
+            }
+        );
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                error: error.message
+            }
+        );
+    }
+}
+
+export const removeCartItem = async (req, res) => {
+    console.log('Here is the remove CartItem function')
+    try {
+        const productId = req.params.id ;
+        console.log('productId', productId)
+        const userId = req.user.id ;
+        console.log('userId1', userId)
+        const cart = await Cart.findOne({ where: { userId } } );
+        console.log('cartId1', cart.id)
+        const deletedItem = await CartItem.findOne({ where:
+            {
+                productId , 
+                cartId: cart.id ,
+            }
+         });
+
+        await CartItem.destroy( { where: 
+            {
+                productId , 
+                cartId: cart.id ,
+            }
+        } );
+        cart.totalCost -= deletedItem.price * deletedItem.quantity ;
+        await cart.save() ;
+        console.log('deletedItem', deletedItem)
+        res.status(200).json(
+            {
+                message: 'You removed the CartItem. Now your cart has following things',
+                deletedItem: deletedItem ,
+            }
+        );
+    } catch (error) {
+        res.status(500).json( {
+            error: error.message ,
+        } );
     }
 }

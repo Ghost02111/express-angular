@@ -5,14 +5,20 @@ import validator from 'validator';
 
 
 export const register = async (req, res) => {
+    console.log('register------------------>')
     try {
-        const { name, email, password } = req.body;
-
+        const { name, email, password, confirmPassword } = req.body;
+        console.log('register------------------>')
         // null checking 
         if (!email || !password) {
             return res.status(400).send({
                 message: "Email and password should be provided"
             })
+        }
+        if (confirmPassword !== password) {
+            return res.status(400).json({
+                message: 'Confirming your password is failed.'
+            });
         }
         
         const isValidEmail = validator.isEmail(email);
@@ -24,7 +30,6 @@ export const register = async (req, res) => {
         let user = await User.findOne( {
                   where: { email }
                 } );
-        console.log(user)
 
         if (user) {
             // user already exists
@@ -37,7 +42,11 @@ export const register = async (req, res) => {
         user = await User.create({ name, email, password: hashedPassword });
         res.status(201).json(
             { 
-                message: 'user registered successfully '
+                message: 'user registered successfully ',
+                NewUser: {
+                    name: user.name ,
+                    email: user.email ,
+                }
             });
     } catch (error) {
         res.status(400).json({
@@ -50,6 +59,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
 
     try {
+        console.log(" Welcome to login backend function! ")
         const { email, password } = req.body;
         const isValidEmail = validator.isEmail(email);
         if ( !isValidEmail) {

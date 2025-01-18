@@ -5,7 +5,7 @@ import {getUsers, addUser, changeRole, deleteUser } from '../controllers/userCon
 const router = express.Router();
 
 router.route("/")
-  .get(authenticateToken, authorizeRole(['ADMIN']) , getUsers)
+  .get(authenticateToken, getUsers)
   .post(authenticateToken, authorizeRole(['ADMIN']) , addUser);
 
 router.route('/:id')

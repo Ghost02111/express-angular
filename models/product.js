@@ -8,19 +8,23 @@ const Product = sequelize.define( 'Product', {
         allowNull: false,
         unique: true,
     },
+    imgUrl: {
+        type: DataTypes.STRING ,
+        // allowNull: false ,
+    },
     price: {
         type: DataTypes.FLOAT,
         allowNull: false,
     },
     producer: {
         type: DataTypes.STRING,
-        defaultValue: 'Unknown producer'
+        defaultValue: 'Unknown'
     },
     country: {
         type: DataTypes.STRING,
     },
-    categoryId: {
-        type: DataTypes.INTEGER,
+    category: {
+        type: DataTypes.STRING,
         allowNull: true,
         // references: {
         //     model: Category,
