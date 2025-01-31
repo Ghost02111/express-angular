@@ -13,3 +13,5 @@ router.route('/:id')
   .delete(authenticateToken, authorizeRole(['ADMIN']), deleteUser);
 
   export default router ;
+
+  
