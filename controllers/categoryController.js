@@ -1,4 +1,3 @@
-import { emitKeypressEvents } from "readline";
 import Category from "../models/category.js";
 
 export const createCategory = async (req, res) => {
@@ -36,18 +35,45 @@ export const createCategory = async (req, res) => {
 
 export const getCategory = async (req, res) => {
     try {
-        const allCategory = await Category.findAll() ;
-        
-        res.status(200).json( 
-            {
-                message: 'Getting catetories are completed successful.',
-                result: allCategory ,
-            }
-        );
+        const categories = await Category.findAll({
+            attributes: ['id', 'name'],
+            order: [['name', 'ASC']]
+        });
+
+        // Check if categories exist
+        if (!categories || categories.length === 0) {
+            // If no categories exist, create default ones
+            const defaultCategories = [
+                { name: 'Electronics' },
+                { name: 'Fashion' },
+                { name: 'Home & Living' },
+                { name: 'Sports' },
+                { name: 'Books' },
+                { name: 'Beauty' }
+							];
+
+            const createdCategories = await Category.bulkCreate(defaultCategories);
+
+            return res.status(200).json({
+                message: 'Default categories created successfully',
+                result: createdCategories
+            });
+        }
+
+        // Return existing categories
+        return res.status(200).json({
+            message: 'Getting categories completed successfully',
+            result: categories
+        });
+
     } catch (error) {
-        res.status(500).send( { message : error.message } );
+        console.error('Error in getCategory:', error);
+        return res.status(500).json({
+            message: 'Error fetching categories',
+            error: error.message
+        });
     }
-}
+};
 
 export const changeCategory = async (req, res) => {
     try {
