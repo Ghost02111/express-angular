@@ -93,7 +93,7 @@ export const reduceCartItem = async (req, res) => {
     console.log('Here is the remove CartItem function')
     try {
         const { productId, quantity } = req.body ;
-        console.log('response', res.body)
+        console.log('response', req.body)
         const userId = req.user.id ;
         console.log('userId', userId)
         const cart = await Cart.findOne({ where: { userId } } );
@@ -124,6 +124,7 @@ export const reduceCartItem = async (req, res) => {
         if ( quantity >= targetItem.quantity ) {
             await CartItem.destroy({ where: { cartId: cart.id, productId } }) ;
         } 
+        console.log('---------qqqqqq')
         targetItem.quantity -= quantity ;
         cart.totalCost -= product.price * quantity ;
         await cart.save();

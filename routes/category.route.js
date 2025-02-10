@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.route('/')
    .post(authenticateToken, authorizeRole(['ADMIN']), createCategory )
-   .get(authenticateToken, authorizeRole(['ADMIN']), getCategory );
+   .get( getCategory );
 
 router.route('/:id') 
    .patch(authenticateToken, authorizeRole(['ADMIN']), changeCategory)
