@@ -6,6 +6,7 @@ Please enter in terminal
 Install the PostgreSQL with the env file
 And connect to database using navicat
 
+npm run server
 
 
 

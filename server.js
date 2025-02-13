@@ -28,6 +28,7 @@ app.use(express.urlencoded ({ extended: true }));
 // app.use(cors());
 
 
+
 app.use('/api/auth', authRoutes );
 app.use('/api/users', userRoutes );
 app.use('/api/products', productRoutes );
